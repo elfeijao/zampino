@@ -4,10 +4,7 @@
 
 #include "zampino.h"
 
-
-Filter::Filter(){
-    Serial.println("Funcionando");
-}
+Filter::Filter(){}
 
 void Filter::coef(  float *b, uint16_t sizeb, 
                     float *a, uint16_t sizea ){
@@ -17,12 +14,16 @@ void Filter::coef(  float *b, uint16_t sizeb,
   _sizeb = sizeb;
   
   _a = a;
-  _sizea = sizea;
+  _sizea = (sizea-1);
 
   xolds = (float*)malloc( sizeb * sizeof(float) );
-  for( int i=0; i < sizeb; i++ ){
+  yolds = (float*)malloc( sizea * sizeof(float) );
+
+  for( int i=0; i < sizeb; i++ )
     xolds[i] = 0;  
-  }
+
+  for( int i=0; i < sizea; i++ )
+    yolds[i] = 0;  
 
 }
 
@@ -38,15 +39,29 @@ float Filter::fir( float x ){
 
 float Filter::iir( float x ){
 
-  return 0.001;
+  float yo = 0;
+  for( int i = 0; i < _sizea; i++ )
+      yo += yolds[i]*_a[i+1];
+
+  float y = fir(x) - yo;
+  shifty(y);
+
+  return y;
   
 }
 
 void Filter::shiftx( float x ){
   
-  for( int i = _sizeb - 1; i > 0 ; i-- )
+  for( int i = (_sizeb - 1); i > 0 ; i-- )
     xolds[i] = xolds[i-1];  
 
   xolds[0] = x;
 }
 
+void Filter::shifty( float y ){
+  
+  for( int i = (_sizea - 1); i > 0 ; i-- )
+    yolds[i] = yolds[i-1];  
+
+  yolds[0] = y;
+}

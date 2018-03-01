@@ -12,15 +12,16 @@ class Filter{
         float fir( float x );
         float iir( float x );
     private:
-      float *_b;
-      uint16_t _sizeb;
-      float *_a;
-      uint16_t _sizea;
+        float *_b;
+        uint16_t _sizeb;
+        float *_a;
+        uint16_t _sizea;
 
-      float *xolds;
+        float *xolds;
+        float *yolds;
 
-
-      void shiftx( float x );
+        void shiftx( float x );
+        void shifty( float y );
 };
 
 
