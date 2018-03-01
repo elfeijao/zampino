@@ -14,7 +14,7 @@ void Filter::coef(  float *b, uint16_t sizeb,
   _sizeb = sizeb;
   
   _a = a;
-  _sizea = (sizea-1);
+  _sizea = sizea;
 
   xolds = (float*)malloc( sizeb * sizeof(float) );
   yolds = (float*)malloc( sizea * sizeof(float) );
@@ -39,14 +39,15 @@ float Filter::fir( float x ){
 
 float Filter::iir( float x ){
 
+  shifty();
+
   float yo = 0;
-  for( int i = 0; i < _sizea; i++ )
-      yo += yolds[i]*_a[i+1];
+  for( int i = 1; i < _sizea; i++ )
+      yo += yolds[i]*_a[i];
 
-  float y = fir(x) - yo;
-  shifty(y);
+  yolds[0] = fir(x) - yo;
 
-  return y;
+  return yolds[0];
   
 }
 
@@ -58,10 +59,9 @@ void Filter::shiftx( float x ){
   xolds[0] = x;
 }
 
-void Filter::shifty( float y ){
-  
+void Filter::shifty(){
+
   for( int i = (_sizea - 1); i > 0 ; i-- )
     yolds[i] = yolds[i-1];  
-
-  yolds[0] = y;
+  
 }

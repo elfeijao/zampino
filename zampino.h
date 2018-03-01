@@ -21,7 +21,7 @@ class Filter{
         float *yolds;
 
         void shiftx( float x );
-        void shifty( float y );
+        void shifty();
 };
 
 
